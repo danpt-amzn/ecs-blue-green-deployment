@@ -27,6 +27,10 @@ Parameters:
 
   VpcCIDR:
     Type: String
+    
+  EcsDiscoveryService:
+    Type: String
+    
 
 Resources:
 
@@ -383,6 +387,7 @@ Resources:
                       "Subnet1": "${Subnet1}",
                       "Subnet2": "${Subnet2}",
                       "VpcId": "${VpcId}",
+                      "EcsDiscoveryService": "${EcsDiscoveryService},
                       "VpcCIDR": "${VpcCIDR}",
                       "Code1" : { "Fn::GetParam" : [ "DiscoveryOutput", "cf_inputs.json", "Code1" ] },
                       "Code2" : { "Fn::GetParam" : [ "DiscoveryOutput", "cf_inputs.json", "Code2" ] },
