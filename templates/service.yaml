@@ -31,6 +31,8 @@ Parameters:
   IsProduction:
     Type: String
 
+  EcsDiscoveryService:
+    Type: String
 
 Resources:
 
@@ -97,9 +99,24 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
 
+
+  ### Create Log Groups
+
+  ecsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+        LogGroupName: !Sub "logGroup-${AWS::StackName}"
+        RetentionInDays: 7 # days
+        
+        
+  ### Create ECS Service and Task Definition      
   Service:
     Type: AWS::ECS::Service
     Properties:
+      ServiceRegistries:
+           - RegistryArn: !GetAtt EcsDiscoveryService.Arn
+             ContainerName: WebContainer
+             ContainerPort: 80
       Cluster: !Ref Cluster
       Role: !Ref ECSServiceRole
       DesiredCount: !Ref DesiredCount
@@ -116,6 +133,12 @@ Resources:
       ContainerDefinitions:
         - Name: simple-app
           Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}:${Tag}
+          LogConfiguration: # configures the logging driver
+            LogDriver: awslogs # use logging driver awslogs to forward log messages to CloudWatch Logs 
+            Options:
+                'awslogs-region': !Ref 'AWS::Region' # the AWS region
+                'awslogs-group':  !Ref ecsLogGroup  # the log group to send log messages to
+                'awslogs-stream-prefix': "PHP-Web-Container" # a prefix for the log stream
           EntryPoint:
             - /usr/sbin/apache2
             - -D
@@ -141,5 +164,7 @@ Resources:
             - SourceContainer: simple-app
           Command:
             - /bin/sh -c "while true; do /bin/date > /var/www/my-vol/date; sleep 1; done"
+          VolumesFrom:
+            - SourceContainer: simple-app
       Volumes:
         - Name: my-vol

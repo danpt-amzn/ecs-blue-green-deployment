@@ -113,7 +113,9 @@ Resources:
                 Action:
                   - ecs:*
                   - ecr:*
+                  - servicediscovery:*
                   - iam:*
+                  - logs:*
                   - ec2:*
                   - elasticloadbalancing:*
                   - autoscaling:*
@@ -201,6 +203,8 @@ Resources:
                   - lambda:*
                   - iam:PassRole
 
+  
+        
   ArtifactBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain

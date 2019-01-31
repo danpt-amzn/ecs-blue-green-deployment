@@ -34,6 +34,9 @@ Parameters:
 
   GitHubRepo:
     Type: String
+    
+  EcsDiscoveryService:
+    Type: String
 
   TemplateBucket:
     Type: String
@@ -198,6 +201,8 @@ Resources:
         Repository: !Ref Repository
         Identifier: "Code2"
         IsProduction: False
+        EcsDiscoveryService: !Ref EcsDiscoveryService
+        
 
   BlueService:
     Type: AWS::CloudFormation::Stack
@@ -213,6 +218,7 @@ Resources:
         Repository: !Ref Repository
         Identifier: "Code1"
         IsProduction: True
+        EcsDiscoveryService: !Ref EcsDiscoveryService
 
 
 Outputs:

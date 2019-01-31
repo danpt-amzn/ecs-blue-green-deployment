@@ -86,6 +86,25 @@ Resources:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref Subnet2
 
+ ### Create Service Disovery for Microservice connectivity
+  EcsDiscoveryNamespace:
+    Type: 'AWS::ServiceDiscovery::PrivateDnsNamespace'
+    Properties:
+      Vpc: !Ref VPC
+      Name: "ecs-movies.com"
+
+  EcsDiscoveryService:
+    Type: 'AWS::ServiceDiscovery::Service'
+    Properties:
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Description: EcsServiceDiscovery
+      DnsConfig: 
+        DnsRecords: 
+          - Type: SRV
+            TTL: 300
+        NamespaceId: !Ref EcsDiscoveryNamespace
+      Name: "Micro-service"
 
 Outputs:
   Subnet1:
@@ -94,3 +113,5 @@ Outputs:
     Value: !Ref Subnet2
   VpcId:
     Value: !Ref VPC
+  EcsDiscoveryService:
+    Value: !Ref EcsDiscoveryService
