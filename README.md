@@ -1,7 +1,21 @@
 ![demo-screen](images/Demo-app.png)
 # MasterBuilder Blue/Green deployment of Demo Movie Databse on ECS
 
-This reference architecture is in reference to blog post on [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/). It creates a continuous delivery by leveraging AWS CloudFormation templates. The templates creates resources using Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging.
+This architecture is built upon the [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/) and makes use of existing samople data found at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.Python.02.html. 
+
+The premise of this solution is that demonstrates how an existing monolithic application can be decomposed into a three tier Microsservice application allowing simple querying of Movie titles from a web interface. 
+
+
+When deployed the architecture can be used to demonmstrate CI/CD (covered in greater detail below), ECS Scaling options (Fargate vs EC2 ASGs), Service Dicovery options between microservices (Load Balancers, Hosted Zones and Service Discovery Zones) integrated logging and monitoring capabilities via logging and CloiudWatch.
+
+## Application Components are as follows:
+1) PHP Web Front End Container - providing simple front end to query the API on EC2 Conatiners
+2) Python Flask AP Container - providing API access to the dataset deployed on Fargate containers
+3) DynamoDB Database - containing the queried dataset
+
+
+## Continuous Integration/Deployment
+It creates a continuous delivery by leveraging AWS CloudFormation templates. The templates creates resources using Amazon's Code* services to build and deploy containers onto an ECS cluster as long running services. It also includes a manual approval step facilitated by lambda function that discovers and swaps target group rules between 2 target groups, promoting the green version to production and demoting the blue version to staging.
 
 ## Pre-Requisites
 1) AWS CLI using admin role access key
