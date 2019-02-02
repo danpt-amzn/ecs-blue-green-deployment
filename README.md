@@ -1,10 +1,11 @@
 ![demo-screen](images/Demo-app.png)
 # MasterBuilder Blue/Green deployment of Demo Movie Databse on ECS
 
-This architecture is built upon the [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/) and makes use of existing samople data found at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.Python.02.html. 
+This architecture is built upon the [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/) and makes use of existing sample data found at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.Python.02.html. 
 
 The premise of this solution is that demonstrates how an existing monolithic application can be decomposed into a three tier Microsservice application allowing simple querying of Movie titles from a web interface. 
 
+![demo-screen](images/query.png)!
 
 When deployed the architecture can be used to demonmstrate CI/CD (covered in greater detail below), ECS Scaling options (Fargate vs EC2 ASGs), Service Dicovery options between microservices (Load Balancers, Hosted Zones and Service Discovery Zones) integrated logging and monitoring capabilities via logging and CloiudWatch.
 
@@ -117,6 +118,6 @@ Providing approvals at this stage will trigger the Lambda function (blue_green_f
 ## Cleanup
 First delete ecs-cluster CloudFormation stack, this will delete both ECS services (BlueService and GreenService) and LoadBalancer stacks. Next delete the parent stack. This should delete all the resources that were created for this exercise 
 
-Note - ECR containers and DynamoDB databases must be manually removed as they are created by CFN scripting.
+Note - ECR containers and DynamoDB databases must be manually removed as they not are created by CFN scripting.
 
 
