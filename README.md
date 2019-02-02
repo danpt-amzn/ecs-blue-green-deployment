@@ -120,4 +120,7 @@ First delete ecs-cluster CloudFormation stack, this will delete both ECS service
 
 Note - ECR containers and DynamoDB databases must be manually removed as they not are created by CFN scripting.
 
+## Issues
+Note the 'title' query option is dependent on a secondary index being created on the DynamoDB Titles attribute. At time of upload this was not included and must be added manually. This be will added in the future.
+
 
