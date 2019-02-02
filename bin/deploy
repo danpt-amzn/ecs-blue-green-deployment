@@ -10,14 +10,27 @@ read GitHubUser
 echo -n "Enter GitHubToken > "
 read GitHubToken
 
+
+#Create Movies Database, Docker Repo and upload the API contaienr, this isnt current part of the Blue Green Deployment
+bin/movies/data-dump
+sleep 3
+
 zip deploy/templates.zip ecs-blue-green-deployment.yaml templates/*
 cd scripts && zip scripts.zip * && cd ..
 mv scripts/scripts.zip deploy/scripts.zip
 
 aws s3 cp deploy/templates.zip "s3://${bucket}" --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates.zip --acl public-read
 aws s3 cp deploy/scripts.zip "s3://${bucket}" --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key scripts.zip --acl public-read
 aws s3 cp ecs-blue-green-deployment.yaml "s3://${bucket}" --acl public-read
-aws s3 cp --recursive templates/ "s3://${bucket}/templates" --acl public-read
+aws s3 cp --recursive templates/ "s3://${bucket}/templates" #--acl public-read
 aws s3 cp --recursive scripts/ "s3://${bucket}/scripts" --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates/service.yaml --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates/ecs-cluster.yaml --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates/load-balancer.yaml --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates/vpc.yaml --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key templates/deployment-pipeline.yaml --acl public-read
+aws s3api put-object-acl --bucket ecs-bg-demo --key ecs-blue-green-deployment.yaml --acl public-read
 aws s3api put-bucket-versioning --bucket "${bucket}" --versioning-configuration Status=Enabled
 aws cloudformation deploy --stack-name $stackname --template-file ecs-blue-green-deployment.yaml --capabilities CAPABILITY_NAMED_IAM --parameter-overrides GitHubUser=$GitHubUser GitHubToken=$GitHubToken TemplateBucket=$bucket

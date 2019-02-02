@@ -33,22 +33,6 @@ Parameters:
 
   EcsDiscoveryService:
     Type: String
-    
-  EcsDiscoveryServiceAPI:
-    Type: String
-    
-  APISG:
-    Type: String
-
-  DNS:
-    Type: String
-    
-  Subnet1:
-    Type: AWS::EC2::Subnet::Id
-    
-  Subnet2:
-    Type: AWS::EC2::Subnet::Id
-
 
 Resources:
 
@@ -116,28 +100,6 @@ Resources:
             - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
 
 
-  APITaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: [ec2.amazonaws.com, ecs.amazonaws.com, ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
-      Path: /
-      Policies:
-      - PolicyName: ecs-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action: ['ecs:CreateCluster', 'ecs:DeregisterContainerInstance', 'ecs:DiscoverPollEndpoint',
-              'ecs:Poll', 'ecs:RegisterContainerInstance', 'ecs:StartTelemetrySession',
-              'ecs:Submit*', 'logs:CreateLogStream', 'ecr:*','logs:PutLogEvents', 'dynammodb:*']
-            Resource: '*'
-      ManagedPolicyArns:
-            - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
-
   ### Create Log Groups
 
   ecsLogGroup:
@@ -145,9 +107,9 @@ Resources:
     Properties:
         LogGroupName: !Sub "logGroup-${AWS::StackName}"
         RetentionInDays: 7 # days
-
-           
-  ### Create ECS Service and Task Definition  - Web App     
+        
+        
+  ### Create ECS Service and Task Definition      
   Service:
     Type: AWS::ECS::Service
     Properties:
@@ -182,7 +144,7 @@ Resources:
             - -D
             - FOREGROUND
           Essential: true
-          Memory: 256
+          Memory: 128
           MountPoints:
             - SourceVolume: my-vol
               ContainerPath: /var/www/my-vol
@@ -204,55 +166,5 @@ Resources:
             - /bin/sh -c "while true; do /bin/date > /var/www/my-vol/date; sleep 1; done"
           VolumesFrom:
             - SourceContainer: web-app
-      Volumes:
-        - Name: my-vol
-
- ### Create ECS Service and Task Definition  - API Server   
-  ServiceAPI:
-    Type: AWS::ECS::Service
-    Properties:
-      LaunchType: FARGATE
-      NetworkConfiguration: 
-        AwsvpcConfiguration:
-          # change to DISABLED if you're using private subnets that have access to a NAT gateway
-          Subnets:
-            - !Ref Subnet1
-            - !Ref Subnet2
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !Ref APISG
-      ServiceRegistries:
-           - RegistryArn: !Ref EcsDiscoveryServiceAPI
-             ContainerName: api-app
-      Cluster: !Ref Cluster
-      #Role: !Ref ECSServiceRole
-      DesiredCount: !Ref DesiredCount
-      TaskDefinition: !Ref TaskDefinitionAPI
-
-
-  TaskDefinitionAPI:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: api-app
-      Cpu: 1024
-      Memory: 2GB
-      TaskRoleArn: !GetAtt APITaskRole.Arn
-      NetworkMode: awsvpc
-      ExecutionRoleArn: !GetAtt APITaskRole.Arn
-      RequiresCompatibilities:
-        - FARGATE
-      ContainerDefinitions:
-        - Name: api-app
-          Essential: true
-          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-final:latest
-          LogConfiguration: # configures the logging driver
-            LogDriver: awslogs # use logging driver awslogs to forward log messages to CloudWatch Logs 
-            Options:
-                'awslogs-region': !Ref 'AWS::Region' # the AWS region
-                'awslogs-group':  !Ref ecsLogGroup  # the log group to send log messages to
-                'awslogs-stream-prefix': "flask-api-Container" # a prefix for the log stream
-          Essential: true
-          PortMappings:
-            - ContainerPort: 5000
       Volumes:
         - Name: my-vol

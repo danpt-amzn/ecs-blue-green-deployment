@@ -36,19 +36,6 @@ Parameters:
     
   EcsDiscoveryServiceAPI:
     Type: String
-    
-  APISG:
-    Type: String
-
-  DNS:
-    Type: String
-    
-  Subnet1:
-    Type: AWS::EC2::Subnet::Id
-    
-  Subnet2:
-    Type: AWS::EC2::Subnet::Id
-
 
 Resources:
 
@@ -135,8 +122,7 @@ Resources:
               'ecs:Poll', 'ecs:RegisterContainerInstance', 'ecs:StartTelemetrySession',
               'ecs:Submit*', 'logs:CreateLogStream', 'ecr:*','logs:PutLogEvents', 'dynammodb:*']
             Resource: '*'
-      ManagedPolicyArns:
-            - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
+
 
   ### Create Log Groups
 
@@ -145,8 +131,8 @@ Resources:
     Properties:
         LogGroupName: !Sub "logGroup-${AWS::StackName}"
         RetentionInDays: 7 # days
-
-           
+        
+        
   ### Create ECS Service and Task Definition  - Web App     
   Service:
     Type: AWS::ECS::Service
@@ -182,7 +168,7 @@ Resources:
             - -D
             - FOREGROUND
           Essential: true
-          Memory: 256
+          Memory: 128
           MountPoints:
             - SourceVolume: my-vol
               ContainerPath: /var/www/my-vol
@@ -211,19 +197,10 @@ Resources:
   ServiceAPI:
     Type: AWS::ECS::Service
     Properties:
-      LaunchType: FARGATE
-      NetworkConfiguration: 
-        AwsvpcConfiguration:
-          # change to DISABLED if you're using private subnets that have access to a NAT gateway
-          Subnets:
-            - !Ref Subnet1
-            - !Ref Subnet2
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !Ref APISG
       ServiceRegistries:
            - RegistryArn: !Ref EcsDiscoveryServiceAPI
              ContainerName: api-app
+             ContainerPort: 5000
       Cluster: !Ref Cluster
       #Role: !Ref ECSServiceRole
       DesiredCount: !Ref DesiredCount
@@ -233,18 +210,11 @@ Resources:
   TaskDefinitionAPI:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: api-app
-      Cpu: 1024
-      Memory: 2GB
+      #Family: !Sub ${AWS::StackName}-simple-app
       TaskRoleArn: !GetAtt APITaskRole.Arn
-      NetworkMode: awsvpc
-      ExecutionRoleArn: !GetAtt APITaskRole.Arn
-      RequiresCompatibilities:
-        - FARGATE
       ContainerDefinitions:
         - Name: api-app
-          Essential: true
-          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/api-final:latest
+          Image: 841659691615.dkr.ecr.eu-west-1.amazonaws.com/api-final:latest
           LogConfiguration: # configures the logging driver
             LogDriver: awslogs # use logging driver awslogs to forward log messages to CloudWatch Logs 
             Options:
@@ -252,6 +222,7 @@ Resources:
                 'awslogs-group':  !Ref ecsLogGroup  # the log group to send log messages to
                 'awslogs-stream-prefix': "flask-api-Container" # a prefix for the log stream
           Essential: true
+          Memory: 128
           PortMappings:
             - ContainerPort: 5000
       Volumes:
