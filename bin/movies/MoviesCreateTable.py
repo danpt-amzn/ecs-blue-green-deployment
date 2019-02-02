@@ -5,7 +5,7 @@ dynamodb = boto3.resource('dynamodb', region_name='eu-west-1')
 
 
 table = dynamodb.create_table(
-    TableName='Movies10',
+    TableName='Movies',
     KeySchema=[
         {
             'AttributeName': 'year',
