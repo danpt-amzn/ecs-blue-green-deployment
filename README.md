@@ -5,7 +5,7 @@ This architecture is built upon the [blue green deployments on ECS](https://aws.
 
 The premise of this solution is that demonstrates how an existing monolithic application can be decomposed into a three tier Microsservice application allowing simple querying of Movie titles from a web interface. 
 
-![demo-screen](images/query.png)
+![demo-screen](images/Query.png)
 
 When deployed the architecture can be used to demonmstrate CI/CD (covered in greater detail below), ECS Scaling options (Fargate vs EC2 ASGs), Service Dicovery options between microservices (Load Balancers, Hosted Zones and Service Discovery Zones) integrated logging and monitoring capabilities via logging and CloiudWatch.
 
