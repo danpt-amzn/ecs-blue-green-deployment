@@ -41,6 +41,8 @@ git clone https://github.com/danpt-amzn/ecs-blue-green-deployment
 ```
 
 #### 3. Run bin/deploy
+First ensure the /bin/movies/data-dump bash script is executable 'chmod a+x'
+
 ```console
 bin/deploy
 ```
