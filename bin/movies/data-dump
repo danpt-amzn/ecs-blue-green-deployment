@@ -3,7 +3,7 @@
 REP_ID=$(aws ecr create-repository --repository-name api-final --query 'repository.repositoryUri' --output text)
 $(aws ecr get-login --no-include-email --region eu-west-1)
 echo $REP_ID
-docker build -t api-final movies/.
+docker build -t api-final bin/movies/.
 docker tag api-final:latest $REP_ID:latest
 docker push $REP_ID:latest
 python3 bin/movies/MoviesCreateTable.py
