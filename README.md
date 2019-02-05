@@ -53,8 +53,8 @@ Here are the inputs required to launch CloudFormation templates:
   * **GitHubUser**: Enter your GitHub Username
   * **GitHubToken**: Enter your GitHub Token for authentication ([https://github.com/settings/tokens](https://github.com/settings/tokens))
 
-Scripting will deploy pipleine, ECS Cluster, Load Balancer, DynamoDB Database and Container services.
-You can open ELB DNS URL to see the ECS Movies DB App by looking at the output of the Load-Balancer.yaml cloudformation script in the console.
+Scripting will deploy the CodePipeline, ECS Cluster, Load Balancer, DynamoDB Database and Container services.
+You can open the ELB DNS URL to see the ECS Movies DB App by looking at the output of the Load-Balancer.yaml cloudformation script in the console.
 
 For testing Blue Green deployment, Go ahead and make a change in Movies Sample App ( within your Repo 'ecs-demo-php-simple-app'). For ex, edit src/index.php and update the background-color to #20E941 to change to Green background color. After commiting to your repo, Code Pipeline will pick the change automatically and go through the process of updating your application. 
 
