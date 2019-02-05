@@ -1,4 +1,4 @@
-# MasterBuilder Blue/Green deployment of Demo Movie Databse on ECS
+# MasterBuilder Blue/Green deployment of Demo Movie Database on ECS
 ![demo-screen](images/Demo-app.png)
 
 This architecture is built upon the [blue green deployments on ECS](https://aws.amazon.com/blogs/compute/bluegreen-deployments-with-amazon-ecs/) and makes use of existing sample data found at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.Python.02.html. 
