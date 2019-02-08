@@ -26,11 +26,11 @@ aws s3api put-object-acl --bucket ecs-bg-demo --key scripts.zip --acl public-rea
 aws s3 cp ecs-blue-green-deployment.yaml "s3://${bucket}" --acl public-read
 aws s3 cp --recursive templates/ "s3://${bucket}/templates" #--acl public-read
 aws s3 cp --recursive scripts/ "s3://${bucket}/scripts" --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key templates/service.yaml --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key templates/ecs-cluster.yaml --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key templates/load-balancer.yaml --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key templates/vpc.yaml --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key templates/deployment-pipeline.yaml --acl public-read
-aws s3api put-object-acl --bucket ecs-bg-demo --key ecs-blue-green-deployment.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key templates/service.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key templates/ecs-cluster.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key templates/load-balancer.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key templates/vpc.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key templates/deployment-pipeline.yaml --acl public-read
+aws s3api put-object-acl --bucket $bucket --key ecs-blue-green-deployment.yaml --acl public-read
 aws s3api put-bucket-versioning --bucket "${bucket}" --versioning-configuration Status=Enabled
 aws cloudformation deploy --stack-name $stackname --template-file ecs-blue-green-deployment.yaml --capabilities CAPABILITY_NAMED_IAM --parameter-overrides GitHubUser=$GitHubUser GitHubToken=$GitHubToken TemplateBucket=$bucket
